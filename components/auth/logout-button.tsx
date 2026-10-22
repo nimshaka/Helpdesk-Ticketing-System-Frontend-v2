@@ -1,12 +1,14 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { logoutAction } from "../../features/auth/api";
+import { useLogout } from "@/features/auth/hooks/use-logout";
 
 export function LogoutButton() {
+  const { mutate, isPending } = useLogout();
+
   return (
-    <form action={logoutAction}>
-      <Button type="submit" variant="outline">
-        Sign out
-      </Button>
-    </form>
+    <Button variant="outline" onClick={() => mutate()} disabled={isPending}>
+      {isPending ? "Signing out..." : "Sign out"}
+    </Button>
   );
 }

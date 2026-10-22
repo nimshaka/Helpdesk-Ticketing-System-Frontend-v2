@@ -44,7 +44,9 @@ export class ActionError extends Error {
   }
 }
 
-export function unwrap<T>(result: ActionResult<T>): T {
+export type ActionSuccess<T> = Extract<ActionResult<T>, { ok: true }>;
+
+export function unwrap<T>(result: ActionResult<T>):  ActionSuccess<T> {
   if (!result.ok) throw new ActionError(result.error);
-  return result.data;
+  return result;
 }
