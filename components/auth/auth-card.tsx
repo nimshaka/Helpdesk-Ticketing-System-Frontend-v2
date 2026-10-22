@@ -6,9 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ReactNode } from "react";
 
-import { AuthCardProps } from "../types";
-
+type AuthCardProps = {
+  title: string;
+  description: string;
+  footer: ReactNode;
+  children: ReactNode;
+};
 
 export function AuthCard({ title, description, footer, children }: AuthCardProps) {
   return (

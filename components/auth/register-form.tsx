@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/shared/form-field";
 import { getFieldError } from "@/utils/get-field-error";
-import { useRegisterForm } from "../hooks/use-register-form";
+import { useRegisterForm } from "../../features/auth/hooks/use-register-form";
+import { FormAlert } from "@/components/shared/form-alert";
 
 export function RegisterForm() {
   const { form, isPending } = useRegisterForm();
@@ -17,6 +18,10 @@ export function RegisterForm() {
         form.handleSubmit();
       }}
     >
+      <form.Subscribe selector={(state) => state.errorMap.onSubmit}>
+        {(error) => <FormAlert error={error} />}
+      </form.Subscribe>
+
       <form.Field name="name">
         {(field) => (
           <FormField

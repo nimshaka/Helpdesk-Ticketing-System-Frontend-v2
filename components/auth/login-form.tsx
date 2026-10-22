@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/shared/form-field";
 import { getFieldError } from "@/utils/get-field-error";
-import { useLoginForm } from "../hooks/use-login-form";
+import { useLoginForm } from "../../features/auth/hooks/use-login-form";
+import { FormAlert } from "@/components/shared/form-alert";
 
 export function LoginForm() {
   const { form, isPending } = useLoginForm();
@@ -17,6 +18,10 @@ export function LoginForm() {
         form.handleSubmit();
       }}
     >
+      <form.Subscribe selector={(state) => state.errorMap.onSubmit}>
+        {(error) => <FormAlert error={error} />}
+      </form.Subscribe>
+
       <form.Field name="email">
         {(field) => (
           <FormField

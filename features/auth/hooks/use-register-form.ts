@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { toast } from "sonner";
+import { toFormErrors } from "@/utils/to-form-errors";
 import { registerSchema } from "../schemas";
 import type { RegisterValues } from "../types";
 import { useRegister } from "./use-register";
@@ -12,13 +12,20 @@ const defaultValues: RegisterValues = {
 };
 
 export function useRegisterForm() {
-  const { mutate, isPending } = useRegister();
+  const { mutateAsync, isPending } = useRegister();
 
   const form = useForm({
     defaultValues,
-    validators: { onChange: registerSchema },
-    onSubmit: ({ value }) => {
-      mutate(value, { onSuccess: () => toast.success("Form is valid (UI only)") });
+    validators: {
+      onChange: registerSchema,
+      onSubmitAsync: async ({ value }) => {
+        try {
+          await mutateAsync(value);
+          return null;
+        } catch (error) {
+          return toFormErrors(error);
+        }
+      },
     },
   });
 

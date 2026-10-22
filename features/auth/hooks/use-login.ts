@@ -1,11 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { unwrap } from "@/lib/api/action-result";
+import { loginAction } from "../api";
 import type { LoginValues } from "../types";
 
 export function useLogin() {
+  const router = useRouter();
+
   return useMutation({
-    mutationFn: async (values: LoginValues) => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return values;
+    mutationFn: async (values: LoginValues) => unwrap(await loginAction(values)),
+    onSuccess: () => {
+      router.replace("/dashboard"); 
+      router.refresh();
     },
   });
 }
