@@ -1,0 +1,40 @@
+import type { Ticket } from "./types";
+
+export const MOCK_TICKETS: Ticket[] = [
+  {
+    id: 1,
+    subject: "Laptop is not working",
+    description: "It shows error E-10.",
+    priority: "high",
+    status: { value: "open", label: "Open" },
+    customer: { id: 1, name: "Nimal" },
+    agent: null,
+    last_activity_at: "2026-10-20T09:30:00Z",
+    created_at: "2026-10-20T09:30:00Z",
+    updated_at: "2026-10-20T09:30:00Z",
+  },
+  {
+    id: 2,
+    subject: "Cannot access email",
+    description: "Password reset link does not arrive.",
+    priority: "medium",
+    status: { value: "in_progress", label: "In Progress" },
+    customer: { id: 1, name: "Nimal" },
+    agent: { id: 7, name: "Kasun" },
+    last_activity_at: "2026-10-21T08:00:00Z",
+    created_at: "2026-10-19T14:00:00Z",
+    updated_at: "2026-10-21T08:00:00Z",
+  },
+  {
+    id: 3,
+    subject: "Printer offline",
+    description: "Office printer is not responding.",
+    priority: "low",
+    status: { value: "waiting_for_customer", label: "Waiting for Customer" },
+    customer: { id: 1, name: "Nimal" },
+    agent: { id: 7, name: "Kasun" },
+    last_activity_at: "2026-10-22T11:15:00Z",
+    created_at: "2026-10-18T10:00:00Z",
+    updated_at: "2026-10-22T11:15:00Z",
+  },
+];

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/shared/form-field";
 import { getFieldError } from "@/utils/get-field-error";
-import { useLoginForm } from "../../features/auth/hooks/use-login-form";
+import { useLoginForm } from "@/features/auth/hooks/use-login-form";
 import { FormAlert } from "@/components/shared/form-alert";
 
 export function LoginForm() {
