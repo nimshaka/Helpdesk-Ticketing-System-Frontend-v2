@@ -18,3 +18,17 @@ export const TICKET_PRIORITY_STYLES: Record<(typeof TICKET_PRIORITIES)[number], 
   medium: "border-amber-200 bg-amber-50 text-amber-700",
   high: "border-red-200 bg-red-50 text-red-700",
 };
+
+
+export const TICKET_STATUS_LABELS: Record<(typeof TICKET_STATUSES)[number], string> = {
+  open: "Open",
+  in_progress: "In Progress",
+  waiting_for_customer: "Waiting for Customer",
+  resolved: "Resolved",
+};
+
+export const TICKET_PRIORITY_LABELS: Record<(typeof TICKET_PRIORITIES)[number], string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High",
+};

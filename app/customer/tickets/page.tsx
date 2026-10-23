@@ -4,49 +4,83 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Pagination } from "@/components/shared/pagination";
 import { Button } from "@/components/ui/button";
 import { requireRole } from "@/features/auth/utils";
+import { getTickets } from "@/features/tickets/api";
+import { TicketFilterBar } from "@/components/tickets/ticket-filter-bar";
 import { TicketTable } from "@/components/tickets/ticket-table";
-import { MOCK_TICKETS } from "@/features/tickets/mock";
-import type { Ticket } from "@/features/tickets/types";
+import { CUSTOMER_TICKETS_PATH } from "@/features/tickets/constants";
+import { parseTicketFilters } from "@/features/tickets/utils";
 import { normalizeSearchParams } from "@/utils/normalize-search-params";
 
 type CustomerTicketsPageProps = {
-    searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function CustomerTicketsPage({ searchParams }: CustomerTicketsPageProps) {
-    await requireRole("customer");
-    const params = normalizeSearchParams(await searchParams);
+const NEW_TICKET_PATH = `${CUSTOMER_TICKETS_PATH}/new`;
 
-    const tickets: Ticket[] = MOCK_TICKETS; // try `[]` to see the empty state
-    const meta = { current_page: Number(params.page) || 1, per_page: 3, total: 9, last_page: 3 };
+function NewTicketButton() {
+  return (
+    <Button render={<Link href={NEW_TICKET_PATH} />} nativeButton={false}>
+      New ticket
+    </Button>
+  );
+}
 
+function NoTickets({ hasFilters }: { hasFilters: boolean }) {
+  if (hasFilters) {
     return (
-        <>
-            <PageHeader
-                title="My tickets"
-                actions={
-                    <Button render={<Link href="/customer/tickets/new" />} nativeButton={false}>
-                        New ticket
-                    </Button>
-                }
-            />
-
-            {tickets.length === 0 ? (
-                <EmptyState
-                    title="No tickets yet"
-                    description="Create your first ticket to get help from our team."
-                    action={
-                        <Button render={<Link href="/customer/tickets/new" />} nativeButton={false}>
-                            New ticket
-                        </Button>
-                    }
-                />
-            ) : (
-                <>
-                    <TicketTable tickets={tickets} basePath="/customer/tickets" />
-                    <Pagination meta={meta} pathname="/customer/tickets" searchParams={params} />
-                </>
-            )}
-        </>
+      <EmptyState
+        title="No tickets match your filters"
+        description="Try a different search, or clear the filters."
+        action={
+          <Button variant="outline" render={<Link href={CUSTOMER_TICKETS_PATH} />} nativeButton={false}>
+            Clear filters
+          </Button>
+        }
+      />
     );
+  }
+
+  return (
+    <EmptyState
+      title="No tickets yet"
+      description="Create your first ticket to get help from our team."
+      action={<NewTicketButton />}
+    />
+  );
+}
+
+export default async function CustomerTicketsPage({ searchParams }: CustomerTicketsPageProps) {
+  await requireRole("customer");
+
+  const filters = parseTicketFilters(normalizeSearchParams(await searchParams));
+  const { tickets, meta } = await getTickets(filters);
+  const hasFilters = Boolean(filters.search || filters.status || filters.priority);
+
+  return (
+    <>
+      <PageHeader
+        title="My tickets"
+        description="Track the requests you have sent to our team."
+        actions={<NewTicketButton />}
+      />
+      <TicketFilterBar basePath={CUSTOMER_TICKETS_PATH} filters={filters} />
+
+      {tickets.length === 0 ? (
+        <NoTickets hasFilters={hasFilters} />
+      ) : (
+        <>
+          <TicketTable tickets={tickets} basePath={CUSTOMER_TICKETS_PATH} />
+          <Pagination
+            meta={meta}
+            pathname={CUSTOMER_TICKETS_PATH}
+            searchParams={{
+              search: filters.search,
+              status: filters.status,
+              priority: filters.priority,
+            }}
+          />
+        </>
+      )}
+    </>
+  );
 }
