@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/utils/cn";
-import { TICKET_PRIORITY_STYLES } from "@/features/tickets/constants";
-import type { TicketPriority } from "@/features/tickets/types";
+import { TICKET_PRIORITY_STYLES } from "@/constants/ticket";
+import type { TicketPriority } from "@/types/ticket";
 
 export function PriorityBadge({ priority }: { priority: TicketPriority }) {
   return (

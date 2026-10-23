@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/utils/cn";
-import { TICKET_STATUS_STYLES } from "@/features/tickets/constants";
+import { TICKET_STATUS_STYLES } from "@/constants/ticket";
 import type { Ticket } from "@/features/tickets/types";
 
 export function StatusBadge({ status }: { status: Ticket["status"] }) {

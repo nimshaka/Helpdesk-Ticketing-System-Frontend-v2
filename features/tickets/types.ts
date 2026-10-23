@@ -1,7 +1,4 @@
-import type { TICKET_PRIORITIES, TICKET_STATUSES } from "./constants";
-
-export type TicketPriority = (typeof TICKET_PRIORITIES)[number];
-export type TicketStatusValue = (typeof TICKET_STATUSES)[number];
+import type { TicketPriority, TicketStatusValue } from "@/types/ticket";
 
 export type Ticket = {
   id: number;
