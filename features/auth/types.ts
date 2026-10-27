@@ -1,10 +1,10 @@
 import type { z } from "zod";
 import type { loginSchema, registerSchema } from "./schemas";
-import type { USER_ROLES } from "./constants";
+import type { UserRole } from "@/types/user";
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegisterValues = z.infer<typeof registerSchema>;
-export type UserRole = (typeof USER_ROLES)[number];
+
 
 export type ApiUser = {
   id: number;

@@ -6,7 +6,8 @@ import { AUTH_COOKIE_MAX_AGE, AUTH_COOKIE_NAME } from "@/constants/auth";
 import { ApiError } from "@/lib/api/errors";
 import { authedRequest } from "@/lib/api/authed-request";
 import { ROLE_HOME } from "./constants";
-import type { ApiUser, UserRole } from "./types";
+import type { ApiUser} from "./types";
+import type { UserRole } from "@/types/user";
 
 export async function setAuthCookie(token: string): Promise<void> {
   (await cookies()).set(AUTH_COOKIE_NAME, token, {

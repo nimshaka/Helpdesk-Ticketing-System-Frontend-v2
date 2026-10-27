@@ -10,3 +10,7 @@ export const createTicketSchema = z.object({
   description: z.string().trim().min(10, "Please describe the problem in at least 10 characters"),
   priority: z.enum(TICKET_PRIORITIES),
 });
+
+export const replySchema = z.object({
+  body: z.string().trim().min(1, "Reply cannot be empty"),
+});

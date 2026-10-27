@@ -4,7 +4,9 @@ import { authedRequest } from "@/lib/api/authed-request";
 import { toActionError, type ActionResult } from "@/lib/api/action-result";
 import type { ApiMeta } from "@/types/api";
 import { TICKETS_PER_PAGE } from "./constants";
-import type { CreateTicketValues, Ticket, TicketFilters } from "./types";
+import type { CreateTicketValues, Ticket, TicketFilters, ReplyValues, TicketDetail } from "./types";
+import { ApiError } from "@/lib/api/errors";
+
 
 type TicketList = { tickets: Ticket[]; meta: ApiMeta };
 
@@ -28,6 +30,32 @@ export async function createTicketAction(
       body: values,
     });
     return { ok: true, data: { id: data.id }, message };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+
+export async function getTicket(id: number): Promise<TicketDetail | null> {
+  try {
+    const { data } = await authedRequest<TicketDetail>(`/tickets/${id}`);
+    return data;
+  } catch (error) {
+    // 404 (missing) and 403 (not yours) both read as "not found" for the user.
+    if (error instanceof ApiError && (error.status === 404 || error.status === 403)) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+export async function addReplyAction(ticketId: number, values: ReplyValues): Promise<ActionResult> {
+  try {
+    const { message } = await authedRequest(`/tickets/${ticketId}/replies`, {
+      method: "POST",
+      body: values,
+    });
+    return { ok: true, data: null, message };
   } catch (error) {
     return toActionError(error);
   }

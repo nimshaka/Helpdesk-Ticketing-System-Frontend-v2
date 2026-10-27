@@ -2,6 +2,8 @@ import type { TicketPriority, TicketStatusValue } from "@/types/ticket";
 import type { z } from "zod";
 import type { TICKET_ASSIGNMENTS } from "./constants";
 import type { createTicketSchema } from "./schemas";
+import type { UserRole } from "@/types/user";
+import type { replySchema } from "./schemas";
 
 export type Ticket = {
   id: number;
@@ -27,3 +29,33 @@ export type TicketFilters = {
 };
 
 export type CreateTicketValues = z.infer<typeof createTicketSchema>;
+
+export type TicketReply = {
+  id: number;
+  body: string;
+  author: { id: number; name: string; role: UserRole };
+  created_at: string;
+};
+
+export type StatusHistoryEntry = {
+  id: number;
+  from: Ticket["status"] | null; // null for the first entry (ticket created)
+  to: Ticket["status"];
+  changed_by: { id: number; name: string };
+  created_at: string;
+};
+
+export type AssignmentHistoryEntry = {
+  agent: { id: number; name: string };
+  assigned_by: number; // an id only, not an object
+  assigned_at: string;
+  unassigned_at: string | null;
+};
+
+export type TicketDetail = Ticket & {
+  replies: TicketReply[]; // oldest first
+  status_history: StatusHistoryEntry[];
+  assignments?: AssignmentHistoryEntry[]; // admin only
+};
+
+export type ReplyValues = z.infer<typeof replySchema>;

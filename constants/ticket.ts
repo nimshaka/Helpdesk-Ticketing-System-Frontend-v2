@@ -32,3 +32,5 @@ export const TICKET_PRIORITY_LABELS: Record<(typeof TICKET_PRIORITIES)[number], 
   medium: "Medium",
   high: "High",
 };
+
+export const CLOSED_TICKET_STATUS = "resolved" as const;
