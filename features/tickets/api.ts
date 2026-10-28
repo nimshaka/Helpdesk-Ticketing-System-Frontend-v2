@@ -4,7 +4,7 @@ import { authedRequest } from "@/lib/api/authed-request";
 import { toActionError, type ActionResult } from "@/lib/api/action-result";
 import type { ApiMeta } from "@/types/api";
 import { TICKETS_PER_PAGE } from "./constants";
-import type { CreateTicketValues, Ticket, TicketFilters, ReplyValues, TicketDetail } from "./types";
+import type { CreateTicketValues, Ticket, TicketFilters, ReplyValues, TicketDetail, AssignableAgent } from "./types";
 import { ApiError } from "@/lib/api/errors";
 import type { TicketStatusTarget } from "@/types/ticket";
 
@@ -80,6 +80,26 @@ export async function changeStatusAction(
     const { message } = await authedRequest(`/tickets/${ticketId}/status`, {
       method: "PATCH",
       body: { status },
+    });
+    return { ok: true, data: null, message };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+
+export async function getAssignableAgents(): Promise<AssignableAgent[]> {
+  const { data } = await authedRequest<AssignableAgent[]>("/users", {
+    query: { role: "agent", is_active: 1, per_page: 100 },
+  });
+  return data;
+}
+
+export async function assignTicketAction(ticketId: number, agentId: number): Promise<ActionResult> {
+  try {
+    const { message } = await authedRequest(`/tickets/${ticketId}/assign`, {
+      method: "PATCH",
+      body: { agent_id: agentId },
     });
     return { ok: true, data: null, message };
   } catch (error) {

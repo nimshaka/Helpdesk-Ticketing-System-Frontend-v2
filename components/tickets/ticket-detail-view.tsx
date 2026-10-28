@@ -7,6 +7,7 @@ import { TicketActions } from "./ticket-actions";
 import { TicketConversation } from "./ticket-conversation";
 import { TicketSummary } from "./ticket-summary";
 import { WaitingBanner } from "./waiting-banner";
+import { AssignmentHistory } from "./assignment-history";
 
 type TicketDetailViewProps = {
   ticket: TicketDetail;
@@ -37,7 +38,11 @@ export function TicketDetailView({ ticket, viewer, backHref, backLabel }: Ticket
               canClaim={canClaimTicket(viewer, ticket)}
             />
           </div>
-          <StatusHistory entries={ticket.status_history} />
+          <div className="space-y-6">
+            <StatusHistory entries={ticket.status_history} />
+            {/* `assignments` is only sent to admins */}
+            {ticket.assignments && <AssignmentHistory entries={ticket.assignments} />}
+          </div>
         </div>
       </div>
     </>

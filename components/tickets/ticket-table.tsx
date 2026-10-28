@@ -6,7 +6,8 @@ import { useMemo } from "react";
 import { DataTable } from "@/components/shared/data-table";
 import { formatDateTime } from "@/utils/format-date";
 import type { Ticket } from "@/features/tickets/types";
-import { isUnclaimed } from "@/features/tickets/utils";
+import { isTicketClosed, isUnclaimed } from "@/features/tickets/utils";
+import { AssignTicketDialog } from "./assign-ticket-dialog";
 import { ClaimButton } from "./claim-button";
 import { PriorityBadge } from "./priority-badge";
 import { StatusBadge } from "./status-badge";
@@ -14,10 +15,13 @@ import { StatusBadge } from "./status-badge";
 type TicketTableProps = {
   tickets: Ticket[];
   basePath: string; // "/customer/tickets", "/agent/tickets" or "/admin/tickets"
-  showClaim?: boolean; // agents get a Claim button on unassigned rows
+  showClaim?: boolean; // agents: a Claim button on unassigned rows
+  showAssign?: boolean; // admins: an Assign / Reassign button on open rows
 };
 
-function getColumns(basePath: string, showClaim: boolean): ColumnDef<Ticket>[] {
+type ColumnOptions = Pick<TicketTableProps, "basePath" | "showClaim" | "showAssign">;
+
+function getColumns({ basePath, showClaim, showAssign }: ColumnOptions): ColumnDef<Ticket>[] {
   const columns: ColumnDef<Ticket>[] = [
     { id: "id", header: "#", cell: ({ row }) => `#${row.original.id}` },
     {
@@ -53,12 +57,27 @@ function getColumns(basePath: string, showClaim: boolean): ColumnDef<Ticket>[] {
     });
   }
 
+  if (showAssign) {
+    columns.push({
+      id: "actions",
+      header: "",
+      // Resolved tickets are closed: no assignment, so no button.
+      cell: ({ row }) =>
+        isTicketClosed(row.original) ? null : (
+          <AssignTicketDialog ticketId={row.original.id} currentAgent={row.original.agent} size="sm" />
+        ),
+    });
+  }
+
   return columns;
 }
 
-export function TicketTable({ tickets, basePath, showClaim = false }: TicketTableProps) {
+export function TicketTable({ tickets, basePath, showClaim = false, showAssign = false }: TicketTableProps) {
   // TanStack Table expects a stable `columns` reference, so we memoize it.
-  const columns = useMemo(() => getColumns(basePath, showClaim), [basePath, showClaim]);
+  const columns = useMemo(
+    () => getColumns({ basePath, showClaim, showAssign }),
+    [basePath, showClaim, showAssign],
+  );
 
   return <DataTable columns={columns} data={tickets} />;
 }

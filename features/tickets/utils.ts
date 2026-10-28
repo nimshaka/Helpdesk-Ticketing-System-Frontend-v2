@@ -60,3 +60,8 @@ export function canChangeStatus(viewer: TicketViewer, ticket: Ticket): boolean {
   if (viewer.role === "admin") return true;
   return viewer.role === "agent" && ticket.agent?.id === viewer.id;
 }
+
+
+export function canAssignTicket(viewer: TicketViewer, ticket: Ticket): boolean {
+  return viewer.role === "admin" && !isTicketClosed(ticket);
+}

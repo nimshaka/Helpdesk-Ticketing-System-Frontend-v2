@@ -9,38 +9,43 @@ import {
   TICKET_STATUSES,
   TICKET_STATUS_LABELS,
 } from "@/constants/ticket";
-import type { TicketFilters } from "@/features/tickets/types";
+import { cn } from "@/utils/cn";
 import { withSearchParams } from "@/utils/with-search-params";
+import { TICKET_ASSIGNMENT_LABELS } from "@/features/tickets/constants";
+import type { TicketAssignment, TicketFilters } from "@/features/tickets/types";
 
 type TicketFilterBarProps = {
   basePath: string;
   filters: TicketFilters;
+  /** Shows an "Assignment" select with these choices (admin). Without it, the active `assignment` is kept as is (agent tabs). */
+  assignmentOptions?: readonly TicketAssignment[];
 };
 
-export function TicketFilterBar({ basePath, filters }: TicketFilterBarProps) {
-  const hasFilters = Boolean(filters.search || filters.status || filters.priority);
+export function TicketFilterBar({ basePath, filters, assignmentOptions }: TicketFilterBarProps) {
+  const hasFilters = Boolean(
+    filters.search || filters.status || filters.priority || (assignmentOptions && filters.assignment),
+  );
 
   return (
-    // A plain GET form: submitting it puts the values in the URL. The `key`
-    // remounts the form whenever the URL filters change, so inputs show the new values.
+    // A plain GET form: submitting it puts the values in the URL. The `key` remounts
+    // the form whenever the URL filters change, so the inputs show the new values.
     <form
-      key={`${filters.search}-${filters.status}-${filters.priority}`}
+      key={`${filters.search}-${filters.status}-${filters.priority}-${filters.assignment}`}
       method="get"
       action={basePath}
-      className="mb-6 grid gap-4 rounded-md border p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto] lg:items-end"
+      className={cn(
+        "mb-6 grid gap-4 rounded-md border p-4 sm:grid-cols-2 lg:items-end",
+        assignmentOptions ? "lg:grid-cols-[2fr_1fr_1fr_1fr_auto]" : "lg:grid-cols-[2fr_1fr_1fr_auto]",
+      )}
     >
-      {/* Keep the active tab when the filters are submitted. */}
-     {filters.assignment && <input type="hidden" name="assignment" value={filters.assignment} />}
+      {/* Keep the active agent tab when the filters are submitted. */}
+      {!assignmentOptions && filters.assignment && (
+        <input type="hidden" name="assignment" value={filters.assignment} />
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="search">Search</Label>
-        <Input
-          id="search"
-          name="search"
-          type="search"
-          placeholder="Search tickets"
-          defaultValue={filters.search}
-        />
+        <Input id="search" name="search" type="search" placeholder="Search tickets" defaultValue={filters.search} />
       </div>
 
       <div className="space-y-2">
@@ -67,12 +72,26 @@ export function TicketFilterBar({ basePath, filters }: TicketFilterBarProps) {
         </NativeSelect>
       </div>
 
+      {assignmentOptions && (
+        <div className="space-y-2">
+          <Label htmlFor="assignment">Assignment</Label>
+          <NativeSelect id="assignment" name="assignment" defaultValue={filters.assignment ?? ""}>
+            <option value="">All tickets</option>
+            {assignmentOptions.map((option) => (
+              <option key={option} value={option}>
+                {TICKET_ASSIGNMENT_LABELS[option]}
+              </option>
+            ))}
+          </NativeSelect>
+        </div>
+      )}
+
       <div className="flex gap-2">
         <Button type="submit">Filter</Button>
         {hasFilters && (
           <Button
             variant="outline"
-            render={<Link href={withSearchParams(basePath, { assignment: filters.assignment })} />}
+            render={<Link href={withSearchParams(basePath, { assignment: assignmentOptions ? undefined : filters.assignment })} />}
             nativeButton={false}
           >
             Clear
