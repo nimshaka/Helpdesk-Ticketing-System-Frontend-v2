@@ -3,12 +3,10 @@ import { TICKET_ASSIGNMENTS } from "./constants";
 import type { TicketFilters } from "./types";
 import {  } from "@/constants/ticket";
 import type { Ticket, TicketViewer } from "./types";
+import { parsePage } from "@/utils/parse-page"
 
 
-function parsePage(value?: string): number | undefined {
-  const page = Number(value);
-  return Number.isInteger(page) && page > 0 ? page : undefined;
-}
+
 
 export function parseTicketFilters(params: Record<string, string | undefined>): TicketFilters {
   return {

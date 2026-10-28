@@ -1,0 +1,1 @@
+export const ASSIGNABLE_AGENTS_QUERY_KEY = ["assignable-agents"] as const;
