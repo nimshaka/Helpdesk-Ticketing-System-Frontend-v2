@@ -10,6 +10,7 @@ import {
   TICKET_STATUS_LABELS,
 } from "@/constants/ticket";
 import type { TicketFilters } from "@/features/tickets/types";
+import { withSearchParams } from "@/utils/with-search-params";
 
 type TicketFilterBarProps = {
   basePath: string;
@@ -28,6 +29,9 @@ export function TicketFilterBar({ basePath, filters }: TicketFilterBarProps) {
       action={basePath}
       className="mb-6 grid gap-4 rounded-md border p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto] lg:items-end"
     >
+      {/* Keep the active tab when the filters are submitted. */}
+     {filters.assignment && <input type="hidden" name="assignment" value={filters.assignment} />}
+
       <div className="space-y-2">
         <Label htmlFor="search">Search</Label>
         <Input
@@ -66,7 +70,11 @@ export function TicketFilterBar({ basePath, filters }: TicketFilterBarProps) {
       <div className="flex gap-2">
         <Button type="submit">Filter</Button>
         {hasFilters && (
-          <Button variant="outline" render={<Link href={basePath} />} nativeButton={false}>
+          <Button
+            variant="outline"
+            render={<Link href={withSearchParams(basePath, { assignment: filters.assignment })} />}
+            nativeButton={false}
+          >
             Clear
           </Button>
         )}

@@ -34,3 +34,23 @@ export const TICKET_PRIORITY_LABELS: Record<(typeof TICKET_PRIORITIES)[number], 
 };
 
 export const CLOSED_TICKET_STATUS = "resolved" as const;
+
+
+// Statuses a person may set by hand (open → in progress happens by claim or assign).
+export const SETTABLE_STATUSES = ["waiting_for_customer", "resolved"] as const;
+
+// The ticket flow from the brief: which statuses can be set from each status.
+export const TICKET_STATUS_TARGETS: Record<
+  (typeof TICKET_STATUSES)[number],
+  readonly (typeof SETTABLE_STATUSES)[number][]
+> = {
+  open: [],
+  in_progress: ["waiting_for_customer", "resolved"],
+  waiting_for_customer: ["resolved"],
+  resolved: [],
+};
+
+export const STATUS_ACTION_LABELS: Record<(typeof SETTABLE_STATUSES)[number], string> = {
+  waiting_for_customer: "Mark as waiting for customer",
+  resolved: "Mark as resolved",
+};

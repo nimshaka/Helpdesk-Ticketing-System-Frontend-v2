@@ -50,3 +50,8 @@ export function unwrap<T>(result: ActionResult<T>):  ActionSuccess<T> {
   if (!result.ok) throw new ActionError(result.error);
   return result;
 }
+
+
+export function getErrorMessage(error: unknown): string {
+  return error instanceof ActionError ? error.message : "Something went wrong. Please try again.";
+}

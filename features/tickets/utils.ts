@@ -2,8 +2,8 @@ import { TICKET_PRIORITIES, TICKET_STATUSES, CLOSED_TICKET_STATUS} from "@/const
 import { TICKET_ASSIGNMENTS } from "./constants";
 import type { TicketFilters } from "./types";
 import {  } from "@/constants/ticket";
-import type { UserRole } from "@/types/user";
-import type { Ticket } from "./types";
+import type { Ticket, TicketViewer } from "./types";
+
 
 function parsePage(value?: string): number | undefined {
   const page = Number(value);
@@ -20,7 +20,7 @@ export function parseTicketFilters(params: Record<string, string | undefined>): 
   };
 }
 
-type Viewer = { id: number; role: UserRole };
+
 
 export function parseTicketId(value: string): number | null {
   return /^\d+$/.test(value) ? Number(value) : null;
@@ -31,7 +31,7 @@ export function isTicketClosed(ticket: Pick<Ticket, "status">): boolean {
 }
 
 /** Mirrors the brief: customers reply on their own tickets, agents on tickets they hold, admins anywhere. Closed tickets accept no replies. */
-export function canReplyToTicket(viewer: Viewer, ticket: Ticket): boolean {
+export function canReplyToTicket(viewer: TicketViewer, ticket: Ticket): boolean {
   if (isTicketClosed(ticket)) return false;
 
   switch (viewer.role) {
@@ -42,4 +42,21 @@ export function canReplyToTicket(viewer: Viewer, ticket: Ticket): boolean {
     case "admin":
       return true;
   }
+}
+
+
+/** Nobody holds it and it is still open for work. */
+export function isUnclaimed(ticket: Ticket): boolean {
+  return ticket.agent === null && !isTicketClosed(ticket);
+}
+
+export function canClaimTicket(viewer: TicketViewer, ticket: Ticket): boolean {
+  return viewer.role === "agent" && isUnclaimed(ticket);
+}
+
+/** Admins may change any open ticket, agents only the tickets they hold. Customers never. */
+export function canChangeStatus(viewer: TicketViewer, ticket: Ticket): boolean {
+  if (isTicketClosed(ticket)) return false;
+  if (viewer.role === "admin") return true;
+  return viewer.role === "agent" && ticket.agent?.id === viewer.id;
 }

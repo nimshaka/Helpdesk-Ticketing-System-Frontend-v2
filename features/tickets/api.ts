@@ -6,6 +6,7 @@ import type { ApiMeta } from "@/types/api";
 import { TICKETS_PER_PAGE } from "./constants";
 import type { CreateTicketValues, Ticket, TicketFilters, ReplyValues, TicketDetail } from "./types";
 import { ApiError } from "@/lib/api/errors";
+import type { TicketStatusTarget } from "@/types/ticket";
 
 
 type TicketList = { tickets: Ticket[]; meta: ApiMeta };
@@ -54,6 +55,31 @@ export async function addReplyAction(ticketId: number, values: ReplyValues): Pro
     const { message } = await authedRequest(`/tickets/${ticketId}/replies`, {
       method: "POST",
       body: values,
+    });
+    return { ok: true, data: null, message };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+
+export async function claimTicketAction(ticketId: number): Promise<ActionResult> {
+  try {
+    const { message } = await authedRequest(`/tickets/${ticketId}/claim`, { method: "POST" });
+    return { ok: true, data: null, message };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function changeStatusAction(
+  ticketId: number,
+  status: TicketStatusTarget,
+): Promise<ActionResult> {
+  try {
+    const { message } = await authedRequest(`/tickets/${ticketId}/status`, {
+      method: "PATCH",
+      body: { status },
     });
     return { ok: true, data: null, message };
   } catch (error) {

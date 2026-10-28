@@ -59,3 +59,5 @@ export type TicketDetail = Ticket & {
 };
 
 export type ReplyValues = z.infer<typeof replySchema>;
+
+export type TicketViewer = { id: number; role: UserRole };

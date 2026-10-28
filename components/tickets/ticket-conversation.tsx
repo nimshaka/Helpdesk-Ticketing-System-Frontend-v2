@@ -4,15 +4,21 @@ import { cn } from "@/utils/cn";
 import { formatDateTime } from "@/utils/format-date";
 import type { TicketReply } from "@/features/tickets/types";
 
-export function TicketConversation({ replies }: { replies: TicketReply[] }) {
+type TicketConversationProps = {
+  isClosed: boolean;
+};
+
+export function TicketConversation({ replies, isClosed }: { replies: TicketReply[] } & TicketConversationProps) {
   return (
     <section aria-labelledby="conversation-title" className="space-y-3">
       <h2 id="conversation-title" className="text-lg font-semibold">
         Conversation
       </h2>
 
-      {replies.length === 0 ? (
+      {replies.length === 0 ?(
+        !isClosed && (
         <p className="text-sm text-muted-foreground">No replies yet.</p>
+         )
       ) : (
         <ul className="space-y-3">
           {replies.map((reply) => (
@@ -35,6 +41,14 @@ export function TicketConversation({ replies }: { replies: TicketReply[] }) {
             </li>
           ))}
         </ul>
+      )}
+      {isClosed && (
+        <p
+          role="status"
+          className="rounded-md border border-dashed py-3 text-center text-sm text-muted-foreground"
+        >
+          Conversation closed
+        </p>
       )}
     </section>
   );
