@@ -12,6 +12,7 @@ import type { TicketPriority } from "@/types/ticket";
 import { getFieldError } from "@/utils/get-field-error";
 import { CUSTOMER_TICKETS_PATH } from "@/features/tickets/constants";
 import { useCreateTicketForm } from "@/features/tickets/hooks/use-create-ticket-form";
+import { AttachmentPicker } from "./attachment-picker";
 
 export function CreateTicketForm() {
   const { form, isPending } = useCreateTicketForm();
@@ -80,6 +81,18 @@ export function CreateTicketForm() {
               ))}
             </NativeSelect>
           </Field>
+        )}
+      </form.Field>
+      
+      <form.Field name="attachments">
+        {(field) => (
+          <AttachmentPicker
+            id="attachments"
+            files={field.state.value}
+            onChange={field.handleChange}
+            disabled={isPending}
+            error={getFieldError(field.state.meta)}
+          />
         )}
       </form.Field>
 

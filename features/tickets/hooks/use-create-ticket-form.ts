@@ -3,11 +3,13 @@ import { toFormErrors } from "@/utils/to-form-errors";
 import { createTicketSchema } from "../schemas";
 import type { CreateTicketValues } from "../types";
 import { useCreateTicket } from "./use-create-ticket";
+import { useResetFormOnLeave } from "@/hooks/use-reset-form-on-leave";
 
 const defaultValues: CreateTicketValues = {
   subject: "",
   description: "",
   priority: "medium",
+  attachments: [],
 };
 
 export function useCreateTicketForm() {
@@ -27,6 +29,6 @@ export function useCreateTicketForm() {
       },
     },
   });
-
+   useResetFormOnLeave(form);
   return { form, isPending };
 }

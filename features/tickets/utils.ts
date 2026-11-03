@@ -4,6 +4,8 @@ import type { TicketFilters } from "./types";
 import {  } from "@/constants/ticket";
 import type { Ticket, TicketViewer } from "./types";
 import { parsePage } from "@/utils/parse-page"
+import { ATTACHMENT_FIELD } from "./constants";
+import type { CreateTicketValues } from "./types";
 
 
 
@@ -62,4 +64,34 @@ export function canChangeStatus(viewer: TicketViewer, ticket: Ticket): boolean {
 
 export function canAssignTicket(viewer: TicketViewer, ticket: Ticket): boolean {
   return viewer.role === "admin" && !isTicketClosed(ticket);
+}
+
+
+export function fileKey(file: File): string {
+  return `${file.name}-${file.size}-${file.lastModified}`;
+}
+
+/** Adds newly chosen files, skipping the ones that are already in the list. */
+export function mergeFiles(current: File[], incoming: File[]): File[] {
+  const known = new Set(current.map(fileKey));
+  return [...current, ...incoming.filter((file) => !known.has(fileKey(file)))];
+}
+
+/** Files cannot travel as JSON, so the create form is sent as multipart FormData. */
+export function buildCreateTicketFormData(values: CreateTicketValues): FormData {
+  const formData = new FormData();
+  formData.set("subject", values.subject.trim());
+  formData.set("description", values.description.trim());
+  formData.set("priority", values.priority);
+  for (const file of values.attachments) formData.append(ATTACHMENT_FIELD, file);
+  return formData;
+}
+
+export function getAttachmentHref(
+  ticketId: number,
+  attachmentId: number,
+  { download = false } = {},
+): string {
+  const path = `/api/tickets/${ticketId}/attachments/${attachmentId}`;
+  return download ? `${path}?download=1` : path;
 }

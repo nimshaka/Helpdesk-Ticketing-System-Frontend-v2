@@ -54,6 +54,7 @@ export type AssignmentHistoryEntry = {
 
 export type TicketDetail = Ticket & {
   replies: TicketReply[]; // oldest first
+  attachments: TicketAttachment[];
   status_history: StatusHistoryEntry[];
   assignments?: AssignmentHistoryEntry[]; // admin only
 };
@@ -66,4 +67,16 @@ export type AssignableAgent = {
   id: number;
   name: string;
   email: string;
+};
+
+
+export type TicketAttachment = {
+  id: number;
+  name: string;
+  mime_type: string;
+  size_bytes: number;
+  is_image: boolean;
+  is_pdf: boolean;
+  uploaded_by: { id: number; name: string };
+  created_at: string;
 };

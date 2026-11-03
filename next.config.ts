@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     agentFeedback: true,
+    serverActions: { bodySizeLimit: "30mb" },
+    proxyClientMaxBodySize: "30mb",
   },
   cacheComponents: true,
   partialPrefetching: true,

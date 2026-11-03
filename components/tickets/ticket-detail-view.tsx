@@ -8,6 +8,7 @@ import { TicketConversation } from "./ticket-conversation";
 import { TicketSummary } from "./ticket-summary";
 import { WaitingBanner } from "./waiting-banner";
 import { AssignmentHistory } from "./assignment-history";
+import { AttachmentList } from "./attachment-list";
 
 type TicketDetailViewProps = {
   ticket: TicketDetail;
@@ -26,6 +27,7 @@ export function TicketDetailView({ ticket, viewer, backHref, backLabel }: Ticket
 
       <div className="space-y-6">
         <TicketSummary ticket={ticket} />
+        <AttachmentList ticketId={ticket.id} attachments={ticket.attachments} />
         <TicketActions viewer={viewer} ticket={ticket} />
 
         <div className="grid items-start gap-6 lg:grid-cols-[1fr_20rem]">

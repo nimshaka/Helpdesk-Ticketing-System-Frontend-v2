@@ -10,9 +10,12 @@ export function toFormErrors(error: unknown): FormErrors {
   }
 
  
-  const fields = Object.fromEntries(
-    Object.entries(error.fieldErrors ?? {}).map(([name, messages]) => [name, messages[0]]),
-  );
+  // Laravel names array errors like "attachments.0". The form has a single "attachments" field.
+  const fields: Record<string, string> = {};
+  for (const [name, messages] of Object.entries(error.fieldErrors ?? {})) {
+    const field = name.split(".")[0];
+    fields[field] ??= messages[0];
+  }
   const hasFieldErrors = Object.keys(fields).length > 0;
 
  

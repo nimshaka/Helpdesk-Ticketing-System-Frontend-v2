@@ -22,7 +22,9 @@ export async function apiRequest<T>(
   }
 
   const headers: Record<string, string> = { Accept: "application/json" };
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  if (body !== undefined && !(body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
   if (token) headers.Authorization = `Bearer ${token}`;
 
   let res: Response;
@@ -30,7 +32,7 @@ export async function apiRequest<T>(
     res = await fetch(url, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: serializeBody(body),
       cache: "no-store",
     });
   } catch {
@@ -48,4 +50,9 @@ export async function apiRequest<T>(
     );
   }
   return json as ApiSuccess<T>;
+}
+
+function serializeBody(body: unknown): BodyInit | undefined {
+  if (body === undefined) return undefined;
+  return body instanceof FormData ? body : JSON.stringify(body);
 }
